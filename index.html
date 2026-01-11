@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>tf-tree</title>
+
+    <!-- Viz.js -->
+    <script src="https://unpkg.com/viz.js@2.1.2/viz.js"></script>
+    <script src="https://unpkg.com/viz.js@2.1.2/full.render.js"></script>
+
+    <style>
+       :root {
+            --bg-dark: #111827;
+            --bg-light: #f9fafb;
+            --border: #374151;
+            --text: #e5e7eb;
+            --text-muted: #9ca3af;
+            --accent: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            background: var(--bg-light);
+            height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: var(--bg-dark);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: #030712;
+            color: var(--text);
+            outline: none;
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 8px;
+            padding: 8px;
+            background: var(--accent);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        button.secondary {
+            background: #374151;
+        }
+
+        .status {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .status span {
+            display: block;
+            color: var(--text-muted);
+        }
+
+        .dep-list {
+            margin-top: 6px;
+            padding: 6px;
+            max-height: 160px;
+            overflow-y: auto;
+            border: 1px solid #374151;
+            border-radius: 4px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #e5e7eb;
+        }
+
+        .dep-item {
+            padding: 2px 0;
+            cursor: pointer;
+        }
+
+        .dep-item:hover {
+            text-decoration: underline;
+        }
+
+        /* Graph canvas */
+        .canvas {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+        }
+
+        svg {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Node styling */
+        /* ===============================
+        Graphviz Rounded Filled Nodes
+        Matches:
+        node [shape=rec, style="rounded,filled", fillcolor="#f5f7fa"]
+        ================================ */
+
+        /* Base node rectangle */
+        .node rect,
+        .node polygon {
+            fill: #f5f7fa !important;         /* node fill */
+            stroke: #9ca3af !important;       /* neutral border */
+            stroke-width: 0.5px;
+            rx: 8px;                          /* rounded corners */
+            ry: 8px;
+            cursor: pointer;
+            transition: 
+                stroke 0.15s ease,
+                stroke-width 0.15s ease,
+                fill 0.15s ease,
+                opacity 0.2s ease;
+        }
+
+        /* Node label text */
+        .node text {
+            fill: #111827 !important;         /* readable dark text */
+            font-size: 13px;
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        /* Hover affordance */
+        .node:hover rect {
+            stroke: #2563eb !important;       /* accent blue on hover */
+            stroke-width: 1px;
+        }
+        
+        /* Default edges */
+        .edge path {
+            stroke: #6b7280;
+            stroke-width: 0.4px;
+            transition: stroke 0.15s ease, opacity 0.2s ease;
+        }
+
+
+        /* Node highlights */
+        .node.selected rect {
+            stroke-width: 0.5 !important;
+        }
+        .node.selected polygon {
+            stroke-width: 1 !important;
+            filter: drop-shadow(0 0 40px rgba(103, 236, 149, 0.8));
+        }
+
+        .node.upstream rect {
+            stroke: #60a5fa !important;
+            stroke-width: 0.5 !important;
+        }
+        /* .node.upstream polygon {
+    stroke: #60a5fa !important;
+    stroke-width: 3 !important;
+} */
+
+        .node.downstream rect {
+            stroke: #f59e0b !important;
+            stroke-width: 0.5 !important;
+        }
+        /* .node.downstream polygon {
+    stroke: #f59e0b !important;
+    stroke-width: 3 !important;
+} */
+
+        .node.search-hit rect {
+            stroke: #a855f7 !important;
+            stroke-width: 0.5 !important;
+        }
+        /* .node.search-hit polygon {
+    stroke: #a855f7 !important;
+    stroke-width: 0.5 !important;
+} */
+
+        .edge.upstream path {
+            stroke: #60a5fa !important;
+            stroke-width: 1 !important;
+        }
+
+        .edge.downstream path {
+            stroke: #f59e0b !important;
+            stroke-width: 1 !important;
+        }
+
+        /* Faded unrelated nodes/edges */
+        .faded {
+            opacity: 0.25 !important;
+            transition: opacity 0.2s ease;
+        }
+
+        .node,
+        .edge {
+            transition: opacity 0.2s ease;
+        }
+
+        /* Zoom controls */
+        .zoom-controls {
+            position: fixed;
+            top: 22px;
+            right: 22px;
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .zoom-controls button {
+            background: none;
+            border: none;
+            color: #e5e7eb;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 0;
+        }
+
+        .zoom-controls button:hover {
+            background: #374151;
+        }
+
+        .graph-inner {
+            transition: transform 0.15s ease-out;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header">TF-TREE</div>
+    
+    <div class="section">
+        <div class="section-title">Load Graphs (.dot)</div>
+
+        <input type="file"
+            id="dotFileInput"
+            accept=".dot"
+            multiple
+            onchange="loadDotFiles()">
+
+        <select id="graphSelector"
+                style="margin-top:8px; width:100%; padding:6px; background:#030712; color:#e5e7eb; border:1px solid #374151; border-radius:4px;"
+                onchange="selectGraph(this.value)">
+            <option value="">Select a graph…</option>
+        </select>
+
+        <div class="status" style="margin-top:6px;">
+            <span id="fileStatus">No graph selected</span>
+        </div>
+    </div>
+
+
+    <div class="section">
+        <div class="section-title">Search</div>
+        <input id="search" placeholder="Resource name (partial)">
+        <button onclick="searchNode()">Find Resource</button>
+        <div style="margin-top:6px;">
+            <div id="searchResults" class="dep-list">.</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Dependency View (Click on node)</div>
+        <div class="status">
+            <span style="color:#5aeeba; font-weight:600;">Selected node:</span>
+            <span id="selectedNode" class="dep-list">none</span>
+        </div>
+
+        <div class="status" style="margin-top:10px;">
+            <div style="color:#60a5fa; font-weight:600;" id="upstreamCount">Child nodes (0):</div>
+            <div id="upstreamList" class="dep-list">none</div>
+        </div>
+        <div class="status" style="margin-top:10px;">
+            <div style="color:#f59e0b; font-weight:600;" id="downstreamCount">Parent nodes (0):</div>
+            <div id="downstreamList" class="dep-list">none</div>
+        </div>
+
+        <button class="secondary" onclick="clearGraphHighlights()" style="margin-top:12px;">Clear Highlight</button>
+    </div>
+
+    <div class="zoom-controls">
+        <button onclick="zoomIn()">+</button>
+        <button onclick="zoomOut()">−</button>
+        <button onclick="resetZoom()">Reset</button>
+    </div>
+</div>
+
+<div class="canvas">
+    <div id="graph" class="graph-inner"></div>
+</div>
+
+<script>
+const dotFiles = new Map(); // filename -> dot content
+let graphEdges = [];
+let forwardMap = {};
+let reverseMap = {};
+let zoomLevel = 1;
+const ZOOM_STEP = 1.2;
+const MIN_ZOOM = 0.2;
+const MAX_ZOOM = 5;
+
+function loadDotFiles() {
+    const input = document.getElementById("dotFileInput");
+    const files = [...input.files];
+
+    if (!files.length) return;
+
+    const selector = document.getElementById("graphSelector");
+    selector.innerHTML = `<option value="">Select a graph…</option>`;
+    dotFiles.clear();
+
+    let pending = files.length;
+
+    files.forEach(file => {
+        if (!file.name.endsWith(".dot")) return;
+
+        const reader = new FileReader();
+        reader.onload = e => {
+            dotFiles.set(file.name, e.target.result);
+
+            const opt = document.createElement("option");
+            opt.value = file.name;
+            opt.textContent = file.name;
+            selector.appendChild(opt);
+
+            pending--;
+            if (pending === 0 && selector.options.length === 2) {
+                selector.selectedIndex = 1;
+                selectGraph(selector.value);
+            }
+        };
+        reader.readAsText(file);
+    });
+}
+
+function selectGraph(fileName) {
+    if (!fileName || !dotFiles.has(fileName)) return;
+
+    document.getElementById("fileStatus").textContent = fileName;
+    renderGraph(dotFiles.get(fileName));
+}
+
+
+
+function renderGraph(dot) {
+    const container = document.getElementById("graph");
+    container.innerHTML = "";
+    clearGraphHighlights();
+
+    // Inject rankdir=LR and reverse arrows visually
+    const patchedDot = dot.replace(
+        /digraph\s+[^{]+{/,
+        match => `${match}\n  rankdir=LR;\n  edge [dir=back];\n`
+    );
+
+    const viz = new Viz();
+    viz.renderSVGElement(patchedDot).then(svg => {
+        container.appendChild(svg);
+        buildGraphMaps(svg);
+        attachHandlers(svg);
+        resetZoom();
+    }).catch(err => {
+        console.error(err);
+        alert("Failed to render DOT graph.");
+    });
+}
+
+
+
+function buildGraphMaps(svg) {
+    graphEdges = [];
+    forwardMap = {};
+    reverseMap = {};
+
+    svg.querySelectorAll("g.edge").forEach(edge => {
+        const title = edge.querySelector("title").textContent;
+        const [from, to] = title.split("->").map(s => s.trim());
+        graphEdges.push({ from, to, edge });
+        forwardMap[from] ??= [];
+        reverseMap[to] ??= [];
+        forwardMap[from].push(to);
+        reverseMap[to].push(from);
+    });
+}
+
+function attachHandlers(svg) {
+    svg.querySelectorAll("g.node").forEach(node => {
+        node.addEventListener("click", () => onNodeClick(node));
+    });
+}
+
+function onNodeClick(node) {
+    clearGraphHighlights();
+    const id = node.querySelector("title").textContent;
+    node.classList.add("selected");
+    document.getElementById("selectedNode").textContent = `${id}`;
+
+    const upstreamNodes = new Set();
+    const downstreamNodes = new Set();
+
+    traverse(id, forwardMap, "downstream", downstreamNodes);
+    traverse(id, reverseMap, "upstream", upstreamNodes);
+
+    renderDependencyLists(upstreamNodes, downstreamNodes);
+    applyFocus(upstreamNodes, downstreamNodes, id);
+}
+
+/* --- Traverse --- */
+function traverse(start, map, cssClass, collector) {
+    const visited = new Set();
+    const queue = [start];
+    while(queue.length) {
+        const current = queue.shift();
+        const neighbors = map[current] || [];
+        neighbors.forEach(next => {
+            if(!visited.has(next)) {
+                visited.add(next);
+                queue.push(next);
+                collector.add(next);
+                highlightNode(next, cssClass);
+                highlightEdge(current, next, cssClass);
+            }
+        });
+    }
+}
+
+/* --- Highlight --- */
+function highlightNode(id, cssClass) {
+    document.querySelectorAll("g.node").forEach(node => {
+        if(node.querySelector("title").textContent === id){
+            node.classList.add(cssClass);
+        }
+    });
+}
+function highlightEdge(from, to, cssClass) {
+    graphEdges.forEach(e=>{
+        if((e.from===from && e.to===to && cssClass==="downstream") ||
+           (e.from===to && e.to===from && cssClass==="upstream")){
+            e.edge.classList.add(cssClass);
+        }
+    });
+}
+
+/* --- Dependency Lists --- */
+function renderDependencyLists(upstreamNodes, downstreamNodes){
+    renderList("upstreamList", upstreamNodes);
+    renderList("downstreamList", downstreamNodes);
+        // Show counts
+    document.getElementById("upstreamCount").textContent = "Child nodes (" + upstreamNodes.size + ")";
+    document.getElementById("downstreamCount").textContent = "Parent nodes (" + downstreamNodes.size + ")";
+}
+
+/* --- List Rendering --- */
+function renderList(elementId, items){
+    const el=document.getElementById(elementId);
+    el.innerHTML="";
+    if(items.size===0){ el.textContent="none"; return; }
+    [...items].sort().forEach(name=>{
+        const div=document.createElement("div");
+        div.className="dep-item";
+        div.textContent=name;
+        div.onclick=()=>focusNode(name);
+        el.appendChild(div);
+    });
+}
+
+/* --- Focus Node --- */
+function focusNode(name){
+    document.querySelectorAll("g.node").forEach(node=>{
+        if(node.querySelector("title").textContent===name){
+            onNodeClick(node);
+            node.scrollIntoView({block:"center", behavior:"smooth"});
+            node.classList.add("search-hit");
+            setTimeout(()=>node.classList.remove("search-hit"),1200);
+        }
+    });
+}
+
+/* --- Search --- */
+function searchNode(){
+    const term = document.getElementById("search").value.toLowerCase();
+
+    clearSearchHighlights();
+
+    const results = new Set();
+
+    document.querySelectorAll("g.node").forEach(node=>{
+        const title = node.querySelector("title").textContent;
+        if(term && title.toLowerCase().includes(term)){
+            node.classList.add("search-hit");
+            results.add(title);
+        }
+    });
+
+    renderSearchResults(results);
+}
+
+
+function renderSearchResults(results){
+    const el = document.getElementById("searchResults");
+    el.innerHTML = "";
+    if(results.size === 0){ el.textContent = "No result"; return; }
+    [...results].sort().forEach(name=>{
+        const div = document.createElement("div");
+        div.className = "dep-item";
+        div.textContent = name;
+        div.onclick = ()=>{
+            // Find the SVG node and trigger onNodeClick
+            document.querySelectorAll("g.node").forEach(node=>{
+                if(node.querySelector("title").textContent === name){
+                    onNodeClick(node);
+                    node.scrollIntoView({block:"center", behavior:"smooth"});
+                }
+            });
+        };
+        el.appendChild(div);
+    });
+}
+
+
+/* --- Clear highlights --- */
+function clearGraphHighlights() {
+    document.querySelectorAll(".selected,.upstream,.downstream,.faded")
+        .forEach(el => el.classList.remove("selected","upstream","downstream","faded"));
+
+    document.getElementById("selectedNode").textContent = "none";
+    document.getElementById("upstreamList").textContent = "none";
+    document.getElementById("downstreamList").textContent = "none";
+    document.getElementById("upstreamCount").textContent = "Child nodes (0)";
+    document.getElementById("downstreamCount").textContent = "Parent nodes (0)";
+}
+
+function clearSearchHighlights() {
+    document.querySelectorAll(".search-hit")
+        .forEach(el => el.classList.remove("search-hit"));
+}
+
+/* --- Focus opacity --- */
+function applyFocus(upstreamNodes, downstreamNodes, selectedId){
+    document.querySelectorAll("g.node").forEach(node=>{
+        const id=node.querySelector("title").textContent;
+        if(id!==selectedId && !upstreamNodes.has(id) && !downstreamNodes.has(id)){
+            node.classList.add("faded");
+        }
+    });
+    document.querySelectorAll("g.edge").forEach(edge=>{
+        const title=edge.querySelector("title").textContent;
+        const matchUp=[...upstreamNodes].some(n=>title.includes(n));
+        const matchDown=[...downstreamNodes].some(n=>title.includes(n));
+        const matchSel=title.includes(selectedId);
+        if(!matchUp && !matchDown && !matchSel){
+            edge.classList.add("faded");
+        }
+    });
+}
+
+/* --- Zoom controls --- */
+function applyZoom(){document.getElementById("graph").style.transform=`scale(${zoomLevel})`;document.getElementById("graph").style.transformOrigin="top left";}
+function zoomIn(){zoomLevel=Math.min(MAX_ZOOM,zoomLevel+ZOOM_STEP);applyZoom();}
+function zoomOut(){zoomLevel=Math.max(MIN_ZOOM,zoomLevel-ZOOM_STEP);applyZoom();}
+function resetZoom(){zoomLevel=1;applyZoom();}
+</script>
+</body>
+</html>
