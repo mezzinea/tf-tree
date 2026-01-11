@@ -1,0 +1,665 @@
+digraph G {
+  rankdir = "RL";
+  node [shape = rect, fontname = "sans-serif"];
+
+  // =====================
+  // Project & Core Services
+  // =====================
+  "google_project.main";
+  "google_project_service.compute";
+  "google_project_service.container";
+  "google_project_service.sqladmin";
+  "google_project_service.pubsub";
+  "google_project_service.secretmanager";
+  "google_project_service.monitoring";
+  "google_project_service.logging";
+  "google_project_service.iam";
+  "google_project_service.cloudresourcemanager";
+  "google_project_service.serviceusage";
+  "google_project_service.cloudkms";
+  "google_project_service.dns";
+  "google_project_service.bigquery";
+  "google_project_service.cloudfunctions";
+  "google_project_service.cloudscheduler";
+  "google_project_service.cloudtasks";
+  "google_project_service.redis";
+  "google_project_service.memorystore";
+  "google_project_service.cloudiot";
+  "google_project_service.cloudiotcore";
+  "google_project_service.dataproc";
+  "google_project_service.dataflow";
+  "google_project_service.composer";
+  "google_project_service.cloudrun";
+
+  "google_project.main" -> {
+    "google_project_service.compute"
+    "google_project_service.container"
+    "google_project_service.sqladmin"
+    "google_project_service.pubsub"
+    "google_project_service.secretmanager"
+    "google_project_service.monitoring"
+    "google_project_service.logging"
+    "google_project_service.iam"
+    "google_project_service.cloudresourcemanager"
+    "google_project_service.serviceusage"
+    "google_project_service.cloudkms"
+    "google_project_service.dns"
+    "google_project_service.bigquery"
+    "google_project_service.cloudfunctions"
+    "google_project_service.cloudscheduler"
+    "google_project_service.cloudtasks"
+    "google_project_service.redis"
+    "google_project_service.memorystore"
+    "google_project_service.cloudiot"
+    "google_project_service.cloudiotcore"
+    "google_project_service.dataproc"
+    "google_project_service.dataflow"
+    "google_project_service.composer"
+    "google_project_service.cloudrun"
+  };
+
+  // =====================
+  // Networking Infrastructure
+  // =====================
+  "google_compute_network.vpc_main";
+  "google_compute_network.vpc_secondary";
+  "google_compute_network.peered_vpc";
+  
+  "google_compute_subnetwork.private_primary";
+  "google_compute_subnetwork.private_secondary";
+  "google_compute_subnetwork.public_primary";
+  "google_compute_subnetwork.public_secondary";
+  "google_compute_subnetwork.database";
+  "google_compute_subnetwork.proxy";
+  "google_compute_subnetwork.gke_private";
+  "google_compute_subnetwork.gke_public";
+  "google_compute_subnetwork.cloudsql";
+  "google_compute_subnetwork.redis";
+  "google_compute_subnetwork.memorystore";
+  "google_compute_subnetwork.dataproc";
+  "google_compute_subnetwork.dataflow";
+  "google_compute_subnetwork.composer";
+  "google_compute_subnetwork.cloudrun";
+  
+  "google_compute_router.nat_router_primary";
+  "google_compute_router.nat_router_secondary";
+  "google_compute_router.cloud_router_primary";
+  "google_compute_router.cloud_router_secondary";
+  
+  "google_compute_router_nat.nat_primary";
+  "google_compute_router_nat.nat_secondary";
+  "google_compute_router_nat.nat_backup";
+  
+  "google_compute_ha_vpn_gateway.vpn_gateway";
+  "google_compute_external_vpn_gateway.external_gateway";
+  "google_compute_vpn_tunnel.tunnel_primary";
+  "google_compute_vpn_tunnel.tunnel_secondary";
+  
+  "google_compute_firewall.allow_internal_all";
+  "google_compute_firewall.allow_internal_web";
+  "google_compute_firewall.allow_internal_db";
+  "google_compute_firewall.allow_internal_cache";
+  "google_compute_firewall.allow_ssh";
+  "google_compute_firewall.allow_https";
+  "google_compute_firewall.allow_http";
+  "google_compute_firewall.allow_gke";
+  "google_compute_firewall.allow_cloudsql";
+  "google_compute_firewall.allow_monitoring";
+  "google_compute_firewall.allow_logging";
+  "google_compute_firewall.allow_vpc_access";
+  "google_compute_firewall.allow_iap";
+  "google_compute_firewall.allow_backup";
+  "google_compute_firewall.allow_bastion";
+  
+  "google_compute_global_address.lb_ip_primary";
+  "google_compute_global_address.lb_ip_secondary";
+  "google_compute_global_address.lb_ip_backup";
+  "google_compute_global_address.vpc_peering";
+  "google_compute_global_address.nat_ips";
+  "google_compute_global_address.cloud_sql_private";
+  "google_compute_global_address.redis_private";
+  "google_compute_global_address.memorystore_private";
+  
+  "google_compute_address.static_regional_primary";
+  "google_compute_address.static_regional_secondary";
+  "google_compute_address.bastion_ip";
+  "google_compute_address.nat_gateway_ip";
+  "google_compute_address.vpn_gateway_ip";
+  
+  "google_compute_network_peering.peering_primary";
+  "google_compute_network_peering.peering_secondary";
+  
+  "google_dns_managed_zone.private_zone";
+  "google_dns_managed_zone.public_zone";
+  "google_dns_record_set.api_a";
+  "google_dns_record_set.api_aaaa";
+  "google_dns_record_set.api_cname";
+  "google_dns_record_set.db_a";
+  "google_dns_record_set.cache_a";
+  "google_dns_record_set.monitoring_a";
+  "google_dns_record_set.logging_a";
+  
+  "google_service_networking_connection.private_vpc";
+  "google_service_networking_connection.cloud_sql";
+  "google_service_networking_connection.redis";
+  "google_service_networking_connection.memorystore";
+
+  "google_compute_service.service_networking";
+
+  "google_project_service.compute" -> "google_compute_network.vpc_main";
+  "google_project_service.compute" -> "google_compute_network.vpc_secondary";
+  "google_project_service.compute" -> "google_compute_network.peered_vpc";
+  
+  "google_compute_network.vpc_main" -> {
+    "google_compute_subnetwork.private_primary"
+    "google_compute_subnetwork.public_primary"
+    "google_compute_subnetwork.database"
+    "google_compute_subnetwork.proxy"
+    "google_compute_subnetwork.gke_private"
+    "google_compute_subnetwork.gke_public"
+    "google_compute_subnetwork.cloudsql"
+    "google_compute_subnetwork.redis"
+    "google_compute_subnetwork.memorystore"
+    "google_compute_subnetwork.dataproc"
+    "google_compute_subnetwork.dataflow"
+    "google_compute_subnetwork.composer"
+    "google_compute_subnetwork.cloudrun"
+    "google_compute_firewall.allow_internal_all"
+    "google_compute_firewall.allow_internal_web"
+    "google_compute_firewall.allow_internal_db"
+    "google_compute_firewall.allow_internal_cache"
+    "google_compute_firewall.allow_ssh"
+    "google_compute_firewall.allow_https"
+    "google_compute_firewall.allow_http"
+    "google_compute_firewall.allow_gke"
+    "google_compute_firewall.allow_cloudsql"
+    "google_compute_firewall.allow_monitoring"
+    "google_compute_firewall.allow_logging"
+    "google_compute_firewall.allow_vpc_access"
+    "google_compute_firewall.allow_iap"
+    "google_compute_firewall.allow_backup"
+    "google_compute_firewall.allow_bastion"
+    "google_compute_router.nat_router_primary"
+    "google_compute_router.cloud_router_primary"
+    "google_compute_ha_vpn_gateway.vpn_gateway"
+    "google_compute_network_peering.peering_primary"
+    "google_service_networking_connection.private_vpc"
+    "google_service_networking_connection.cloud_sql"
+    "google_service_networking_connection.redis"
+    "google_service_networking_connection.memorystore"
+  };
+  
+  "google_compute_network.vpc_secondary" -> {
+    "google_compute_subnetwork.private_secondary"
+    "google_compute_subnetwork.public_secondary"
+    "google_compute_router.nat_router_secondary"
+    "google_compute_router.cloud_router_secondary"
+    "google_compute_network_peering.peering_secondary"
+  };
+  
+  "google_compute_subnetwork.private_primary" -> "google_compute_router.nat_router_primary";
+  "google_compute_subnetwork.private_secondary" -> "google_compute_router.nat_router_secondary";
+  "google_compute_subnetwork.database" -> "google_compute_router.cloud_router_primary";
+  
+  "google_compute_router.nat_router_primary" -> "google_compute_router_nat.nat_primary";
+  "google_compute_router.nat_router_primary" -> "google_compute_router_nat.nat_backup";
+  "google_compute_router.nat_router_secondary" -> "google_compute_router_nat.nat_secondary";
+  
+  "google_compute_ha_vpn_gateway.vpn_gateway" -> "google_compute_vpn_tunnel.tunnel_primary";
+  "google_compute_ha_vpn_gateway.vpn_gateway" -> "google_compute_vpn_tunnel.tunnel_secondary";
+  "google_compute_external_vpn_gateway.external_gateway" -> "google_compute_vpn_tunnel.tunnel_primary";
+  "google_compute_external_vpn_gateway.external_gateway" -> "google_compute_vpn_tunnel.tunnel_secondary";
+  
+  "google_project_service.dns" -> "google_dns_managed_zone.private_zone";
+  "google_project_service.dns" -> "google_dns_managed_zone.public_zone";
+  
+  "google_dns_managed_zone.private_zone" -> {
+    "google_dns_record_set.api_a"
+    "google_dns_record_set.api_aaaa"
+    "google_dns_record_set.db_a"
+    "google_dns_record_set.cache_a"
+  };
+  
+  "google_dns_managed_zone.public_zone" -> {
+    "google_dns_record_set.api_cname"
+    "google_dns_record_set.monitoring_a"
+    "google_dns_record_set.logging_a"
+  };
+
+  // =====================
+  // IAM & Service Accounts
+  // =====================
+  "google_service_account.gke_nodes";
+  "google_service_account.gke_pods";
+  "google_service_account.cloudsql_proxy";
+  "google_service_account.pubsub_publisher";
+  "google_service_account.pubsub_subscriber";
+  "google_service_account.bigquery_loader";
+  "google_service_account.dataflow_worker";
+  "google_service_account.dataproc_worker";
+  "google_service_account.composer_worker";
+  "google_service_account.cloudrun_service";
+  "google_service_account.cloudfunctions_invoker";
+  "google_service_account.bastion_host";
+  "google_service_account.monitoring_agent";
+  "google_service_account.logging_agent";
+  "google_service_account.backup_agent";
+  "google_service_account.cicd_runner";
+  "google_service_account.artifact_registry";
+  "google_service_account.vpc_access";
+  "google_service_account.secret_accessor";
+  "google_service_account.kms_decrypter";
+  "google_service_account.redis_access";
+  "google_service_account.memorystore_access";
+  
+  "google_project_iam_member.gke_logging";
+  "google_project_iam_member.gke_monitoring";
+  "google_project_iam_member.gke_metric_writer";
+  "google_project_iam_member.gke_viewer";
+  "google_project_iam_member.cloudsql_client";
+  "google_project_iam_member.pubsub_publisher";
+  "google_project_iam_member.pubsub_subscriber";
+  "google_project_iam_member.bigquery_user";
+  "google_project_iam_member.bigquery_data_editor";
+  "google_project_iam_member.dataflow_worker";
+  "google_project_iam_member.dataproc_worker";
+  "google_project_iam_member.composer_worker";
+  "google_project_iam_member.cloudrun_invoker";
+  "google_project_iam_member.cloudfunctions_invoker";
+  "google_project_iam_member.secret_accessor";
+  "google_project_iam_member.kms_decrypter";
+  "google_project_iam_member.storage_admin";
+  "google_project_iam_member.storage_object_viewer";
+  "google_project_iam_member.artifact_registry_reader";
+  "google_project_iam_member.artifact_registry_writer";
+  "google_project_iam_member.vpc_access_user";
+  "google_project_iam_member.redis_access";
+  "google_project_iam_member.memorystore_access";
+  "google_project_iam_member.compute_network_user";
+  "google_project_iam_member.compute_instance_admin";
+  "google_project_iam_member.iap_tunnel_user";
+  
+  "google_project_iam_custom_role.gke_cluster_admin";
+  "google_project_iam_custom_role.cloudsql_dba";
+  "google_project_iam_custom_role.pubsub_manager";
+  "google_project_iam_custom_role.monitoring_admin";
+  "google_project_iam_custom_role.logging_admin";
+  
+  "google_service_account_iam_member.gke_nodes_workload";
+  "google_service_account_iam_member.gke_pods_workload";
+  "google_service_account_iam_member.cloudsql_proxy_binding";
+  "google_service_account_iam_member.pubsub_publisher_binding";
+  "google_service_account_iam_member.pubsub_subscriber_binding";
+  "google_service_account_iam_member.bigquery_loader_binding";
+  "google_service_account_iam_member.dataflow_worker_binding";
+  "google_service_account_iam_member.dataproc_worker_binding";
+  "google_service_account_iam_member.composer_worker_binding";
+  "google_service_account_iam_member.cloudrun_service_binding";
+  "google_service_account_iam_member.cloudfunctions_invoker_binding";
+  "google_service_account_iam_member.bastion_host_binding";
+  "google_service_account_iam_member.monitoring_agent_binding";
+  "google_service_account_iam_member.logging_agent_binding";
+  "google_service_account_iam_member.backup_agent_binding";
+  "google_service_account_iam_member.cicd_runner_binding";
+  "google_service_account_iam_member.artifact_registry_binding";
+  "google_service_account_iam_member.vpc_access_binding";
+  "google_service_account_iam_member.secret_accessor_binding";
+  "google_service_account_iam_member.kms_decrypter_binding";
+  "google_service_account_iam_member.redis_access_binding";
+  "google_service_account_iam_member.memorystore_access_binding";
+
+  "google_project.main" -> {
+    "google_service_account.gke_nodes"
+    "google_service_account.gke_pods"
+    "google_service_account.cloudsql_proxy"
+    "google_service_account.pubsub_publisher"
+    "google_service_account.pubsub_subscriber"
+    "google_service_account.bigquery_loader"
+    "google_service_account.dataflow_worker"
+    "google_service_account.dataproc_worker"
+    "google_service_account.composer_worker"
+    "google_service_account.cloudrun_service"
+    "google_service_account.cloudfunctions_invoker"
+    "google_service_account.bastion_host"
+    "google_service_account.monitoring_agent"
+    "google_service_account.logging_agent"
+    "google_service_account.backup_agent"
+    "google_service_account.cicd_runner"
+    "google_service_account.artifact_registry"
+    "google_service_account.vpc_access"
+    "google_service_account.secret_accessor"
+    "google_service_account.kms_decrypter"
+    "google_service_account.redis_access"
+    "google_service_account.memorystore_access"
+    "google_project_iam_custom_role.gke_cluster_admin"
+    "google_project_iam_custom_role.cloudsql_dba"
+    "google_project_iam_custom_role.pubsub_manager"
+    "google_project_iam_custom_role.monitoring_admin"
+    "google_project_iam_custom_role.logging_admin"
+  };
+  
+  "google_service_account.gke_nodes" -> {
+    "google_project_iam_member.gke_logging"
+    "google_project_iam_member.gke_monitoring"
+    "google_project_iam_member.gke_metric_writer"
+    "google_project_iam_member.gke_viewer"
+    "google_service_account_iam_member.gke_nodes_workload"
+  };
+  
+  "google_service_account.cloudsql_proxy" -> {
+    "google_project_iam_member.cloudsql_client"
+    "google_service_account_iam_member.cloudsql_proxy_binding"
+  };
+  
+  "google_service_account.pubsub_publisher" -> {
+    "google_project_iam_member.pubsub_publisher"
+    "google_service_account_iam_member.pubsub_publisher_binding"
+  };
+  
+  "google_service_account.pubsub_subscriber" -> {
+    "google_project_iam_member.pubsub_subscriber"
+    "google_service_account_iam_member.pubsub_subscriber_binding"
+  };
+  
+  "google_service_account.bigquery_loader" -> {
+    "google_project_iam_member.bigquery_user"
+    "google_project_iam_member.bigquery_data_editor"
+    "google_service_account_iam_member.bigquery_loader_binding"
+  };
+  
+  "google_service_account.dataflow_worker" -> {
+    "google_project_iam_member.dataflow_worker"
+    "google_service_account_iam_member.dataflow_worker_binding"
+  };
+  
+  "google_service_account.dataproc_worker" -> {
+    "google_project_iam_member.dataproc_worker"
+    "google_service_account_iam_member.dataproc_worker_binding"
+  };
+  
+  "google_service_account.composer_worker" -> {
+    "google_project_iam_member.composer_worker"
+    "google_service_account_iam_member.composer_worker_binding"
+  };
+  
+  "google_service_account.cloudrun_service" -> {
+    "google_project_iam_member.cloudrun_invoker"
+    "google_service_account_iam_member.cloudrun_service_binding"
+  };
+  
+  "google_service_account.cloudfunctions_invoker" -> {
+    "google_project_iam_member.cloudfunctions_invoker"
+    "google_service_account_iam_member.cloudfunctions_invoker_binding"
+  };
+  
+  "google_service_account.secret_accessor" -> {
+    "google_project_iam_member.secret_accessor"
+    "google_service_account_iam_member.secret_accessor_binding"
+  };
+  
+  "google_service_account.kms_decrypter" -> {
+    "google_project_iam_member.kms_decrypter"
+    "google_service_account_iam_member.kms_decrypter_binding"
+  };
+
+  // =====================
+  // GKE Clusters & Node Pools
+  // =====================
+  "google_container_cluster.primary";
+  "google_container_cluster.secondary";
+  "google_container_cluster.backup";
+  
+  "google_container_node_pool.primary_default";
+  "google_container_node_pool.primary_spot";
+  "google_container_node_pool.primary_preemptible";
+  "google_container_node_pool.primary_gpu";
+  "google_container_node_pool.primary_memory_optimized";
+  "google_container_node_pool.primary_cpu_optimized";
+  
+  "google_container_node_pool.secondary_default";
+  "google_container_node_pool.secondary_spot";
+  "google_container_node_pool.secondary_preemptible";
+  
+  "google_container_node_pool.backup_default";
+  
+  "google_container_analysis_note.image_scan";
+  "google_container_analysis_occurrence.scan_result";
+  
+  "google_binary_authorization_policy.cluster_policy";
+  "google_binary_authorization_attestor.image_attestor";
+  "google_binary_authorization_attestor_iam_member.attestor_binding";
+
+  "google_project_service.container" -> "google_container_cluster.primary";
+  "google_project_service.container" -> "google_container_cluster.secondary";
+  "google_project_service.container" -> "google_container_cluster.backup";
+  
+  "google_compute_subnetwork.gke_private" -> "google_container_cluster.primary";
+  "google_compute_subnetwork.gke_public" -> "google_container_cluster.secondary";
+  "google_compute_subnetwork.private_secondary" -> "google_container_cluster.backup";
+  
+  "google_service_account.gke_nodes" -> "google_container_cluster.primary";
+  "google_service_account.gke_nodes" -> "google_container_cluster.secondary";
+  "google_service_account.gke_nodes" -> "google_container_cluster.backup";
+  
+  "google_service_account.gke_pods" -> "google_container_cluster.primary";
+  "google_service_account.gke_pods" -> "google_container_cluster.secondary";
+  
+  "google_container_cluster.primary" -> {
+    "google_container_node_pool.primary_default"
+    "google_container_node_pool.primary_spot"
+    "google_container_node_pool.primary_preemptible"
+    "google_container_node_pool.primary_gpu"
+    "google_container_node_pool.primary_memory_optimized"
+    "google_container_node_pool.primary_cpu_optimized"
+  };
+  
+  "google_container_cluster.secondary" -> {
+    "google_container_node_pool.secondary_default"
+    "google_container_node_pool.secondary_spot"
+    "google_container_node_pool.secondary_preemptible"
+  };
+  
+  "google_container_cluster.backup" -> "google_container_node_pool.backup_default";
+  
+  "google_container_cluster.primary" -> "google_binary_authorization_policy.cluster_policy";
+  "google_binary_authorization_policy.cluster_policy" -> "google_binary_authorization_attestor.image_attestor";
+  "google_binary_authorization_attestor.image_attestor" -> "google_binary_authorization_attestor_iam_member.attestor_binding";
+  
+  "google_container_cluster.primary" -> "google_container_analysis_note.image_scan";
+  "google_container_analysis_note.image_scan" -> "google_container_analysis_occurrence.scan_result";
+
+  // =====================
+  // Load Balancing & Proxies
+  // =====================
+  "google_compute_managed_ssl_certificate.lb_cert_primary";
+  "google_compute_managed_ssl_certificate.lb_cert_secondary";
+  "google_compute_managed_ssl_certificate.lb_cert_wildcard";
+  
+  "google_compute_backend_service.lb_backend_primary";
+  "google_compute_backend_service.lb_backend_secondary";
+  "google_compute_backend_service.lb_backend_backup";
+  "google_compute_backend_service.lb_backend_static";
+  "google_compute_backend_service.lb_backend_cloudrun";
+  "google_compute_backend_service.lb_backend_cloudfunctions";
+  "google_compute_backend_service.lb_backend_gke";
+  
+  "google_compute_backend_bucket.static_assets";
+  
+  "google_compute_url_map.lb_url_map_primary";
+  "google_compute_url_map.lb_url_map_secondary";
+  "google_compute_url_map.lb_url_map_internal";
+  
+  "google_compute_target_https_proxy.lb_https_proxy_primary";
+  "google_compute_target_https_proxy.lb_https_proxy_secondary";
+  "google_compute_target_http_proxy.lb_http_proxy";
+  "google_compute_target_ssl_proxy.lb_ssl_proxy";
+  "google_compute_target_tcp_proxy.lb_tcp_proxy";
+  
+  "google_compute_global_forwarding_rule.lb_forwarding_rule_https";
+  "google_compute_global_forwarding_rule.lb_forwarding_rule_http";
+  "google_compute_global_forwarding_rule.lb_forwarding_rule_tcp";
+  "google_compute_global_forwarding_rule.lb_forwarding_rule_ssl";
+  "google_compute_global_forwarding_rule.lb_forwarding_rule_internal";
+  
+  "google_compute_region_backend_service.regional_backend";
+  
+  "google_compute_health_check.lb_health_check_http";
+  "google_compute_health_check.lb_health_check_https";
+  "google_compute_health_check.lb_health_check_tcp";
+  "google_compute_health_check.lb_health_check_ssl";
+  "google_compute_health_check.lb_health_check_gke";
+  "google_compute_health_check.lb_health_check_cloudsql";
+
+  "google_project_service.compute" -> "google_compute_global_address.lb_ip_primary";
+  "google_project_service.compute" -> "google_compute_global_address.lb_ip_secondary";
+  "google_project_service.compute" -> "google_compute_global_address.lb_ip_backup";
+  
+  "google_container_cluster.primary" -> "google_compute_backend_service.lb_backend_primary";
+  "google_container_cluster.secondary" -> "google_compute_backend_service.lb_backend_secondary";
+  "google_container_cluster.backup" -> "google_compute_backend_service.lb_backend_backup";
+  
+  "google_compute_backend_service.lb_backend_primary" -> "google_compute_url_map.lb_url_map_primary";
+  "google_compute_backend_service.lb_backend_secondary" -> "google_compute_url_map.lb_url_map_secondary";
+  "google_compute_backend_service.lb_backend_internal" -> "google_compute_url_map.lb_url_map_internal";
+  
+  "google_compute_managed_ssl_certificate.lb_cert_primary" -> "google_compute_target_https_proxy.lb_https_proxy_primary";
+  "google_compute_managed_ssl_certificate.lb_cert_secondary" -> "google_compute_target_https_proxy.lb_https_proxy_secondary";
+  "google_compute_managed_ssl_certificate.lb_cert_wildcard" -> "google_compute_target_https_proxy.lb_https_proxy_primary";
+  "google_compute_managed_ssl_certificate.lb_cert_wildcard" -> "google_compute_target_https_proxy.lb_https_proxy_secondary";
+  
+  "google_compute_url_map.lb_url_map_primary" -> "google_compute_target_https_proxy.lb_https_proxy_primary";
+  "google_compute_url_map.lb_url_map_secondary" -> "google_compute_target_https_proxy.lb_https_proxy_secondary";
+  "google_compute_url_map.lb_url_map_internal" -> "google_compute_target_http_proxy.lb_http_proxy";
+  
+  "google_compute_target_https_proxy.lb_https_proxy_primary" -> "google_compute_global_forwarding_rule.lb_forwarding_rule_https";
+  "google_compute_target_https_proxy.lb_https_proxy_secondary" -> "google_compute_global_forwarding_rule.lb_forwarding_rule_https";
+  "google_compute_target_http_proxy.lb_http_proxy" -> "google_compute_global_forwarding_rule.lb_forwarding_rule_http";
+  "google_compute_target_ssl_proxy.lb_ssl_proxy" -> "google_compute_global_forwarding_rule.lb_forwarding_rule_ssl";
+  "google_compute_target_tcp_proxy.lb_tcp_proxy" -> "google_compute_global_forwarding_rule.lb_forwarding_rule_tcp";
+  
+  "google_compute_global_address.lb_ip_primary" -> "google_compute_global_forwarding_rule.lb_forwarding_rule_https";
+  "google_compute_global_address.lb_ip_secondary" -> "google_compute_global_forwarding_rule.lb_forwarding_rule_https";
+  "google_compute_global_address.lb_ip_backup" -> "google_compute_global_forwarding_rule.lb_forwarding_rule_internal";
+  
+  "google_compute_health_check.lb_health_check_http" -> "google_compute_backend_service.lb_backend_primary";
+  "google_compute_health_check.lb_health_check_https" -> "google_compute_backend_service.lb_backend_secondary";
+  "google_compute_health_check.lb_health_check_tcp" -> "google_compute_backend_service.lb_backend_backup";
+  "google_compute_health_check.lb_health_check_ssl" -> "google_compute_backend_service.lb_backend_static";
+  "google_compute_health_check.lb_health_check_gke" -> "google_compute_backend_service.lb_backend_gke";
+  "google_compute_health_check.lb_health_check_cloudsql" -> "google_compute_region_backend_service.regional_backend";
+
+  // =====================
+  // Cloud SQL & Databases
+  // =====================
+  "google_sql_database_instance.primary";
+  "google_sql_database_instance.replica";
+  "google_sql_database_instance.backup";
+  "google_sql_database_instance.logical_backup";
+  
+  "google_sql_database.app_database";
+  "google_sql_database.analytics_database";
+  "google_sql_database.backup_database";
+  "google_sql_database.log_database";
+  "google_sql_database.audit_database";
+  
+  "google_sql_user.app_user";
+  "google_sql_user.analytics_user";
+  "google_sql_user.backup_user";
+  "google_sql_user.monitoring_user";
+  "google_sql_user.replication_user";
+  
+  "google_sql_ssl_cert.instance_cert";
+  "google_sql_source_representation.external_source";
+  
+  "google_sql_database_instance.private_ip_only";
+
+  "google_project_service.sqladmin" -> "google_sql_database_instance.primary";
+  "google_project_service.sqladmin" -> "google_sql_database_instance.replica";
+  "google_project_service.sqladmin" -> "google_sql_database_instance.backup";
+  "google_project_service.sqladmin" -> "google_sql_database_instance.logical_backup";
+  "google_project_service.sqladmin" -> "google_sql_database_instance.private_ip_only";
+  
+  "google_compute_network.vpc_main" -> "google_sql_database_instance.primary";
+  "google_compute_network.vpc_main" -> "google_sql_database_instance.replica";
+  "google_compute_network.vpc_main" -> "google_sql_database_instance.backup";
+  "google_compute_network.vpc_main" -> "google_sql_database_instance.private_ip_only";
+  
+  "google_service_networking_connection.cloud_sql" -> "google_sql_database_instance.primary";
+  "google_service_networking_connection.cloud_sql" -> "google_sql_database_instance.replica";
+  "google_service_networking_connection.cloud_sql" -> "google_sql_database_instance.backup";
+  "google_service_networking_connection.cloud_sql" -> "google_sql_database_instance.private_ip_only";
+  
+  "google_sql_database_instance.primary" -> {
+    "google_sql_database.app_database"
+    "google_sql_database.analytics_database"
+    "google_sql_database.log_database"
+    "google_sql_database.audit_database"
+    "google_sql_user.app_user"
+    "google_sql_user.analytics_user"
+    "google_sql_user.monitoring_user"
+    "google_sql_user.replication_user"
+    "google_sql_ssl_cert.instance_cert"
+    "google_sql_source_representation.external_source"
+  };
+  
+  "google_sql_database_instance.replica" -> {
+    "google_sql_database.backup_database"
+    "google_sql_user.backup_user"
+  };
+  
+  "google_sql_database_instance.backup" -> "google_sql_database.backup_database";
+  "google_sql_database_instance.logical_backup" -> "google_sql_database.backup_database";
+  
+  "google_sql_database_instance.primary" -> "google_sql_database_instance.replica";
+  "google_sql_database_instance.primary" -> "google_sql_database_instance.backup";
+
+  // =====================
+  // Secrets & KMS
+  // =====================
+  "google_secret_manager_secret.db_password";
+  "google_secret_manager_secret.api_key";
+  "google_secret_manager_secret.oauth_secret";
+  "google_secret_manager_secret.jwt_secret";
+  "google_secret_manager_secret.encryption_key";
+  "google_secret_manager_secret.backup_key";
+  "google_secret_manager_secret.monitoring_token";
+  "google_secret_manager_secret.logging_token";
+  "google_secret_manager_secret.cicd_token";
+  "google_secret_manager_secret.vpn_key";
+  
+  "google_secret_manager_secret_version.db_password_v1";
+  "google_secret_manager_secret_version.api_key_v1";
+  "google_secret_manager_secret_version.oauth_secret_v1";
+  "google_secret_manager_secret_version.jwt_secret_v1";
+  "google_secret_manager_secret_version.encryption_key_v1";
+  "google_secret_manager_secret_version.backup_key_v1";
+  "google_secret_manager_secret_version.monitoring_token_v1";
+  "google_secret_manager_secret_version.logging_token_v1";
+  "google_secret_manager_secret_version.cicd_token_v1";
+  "google_secret_manager_secret_version.vpn_key_v1";
+  
+  "google_kms_key_ring.secrets_keyring";
+  "google_kms_crypto_key.db_encryption_key";
+  "google_kms_crypto_key.backup_encryption_key";
+  "google_kms_crypto_key.disk_encryption_key";
+  "google_kms_crypto_key.audit_log_key";
+  
+  "google_kms_crypto_key_version.db_key_version";
+  "google_kms_crypto_key_version.backup_key_version";
+  "google_kms_crypto_key_version.disk_key_version";
+  "google_kms_crypto_key_version.audit_log_key_version";
+  
+  "google_kms_secret_ciphertext.encrypted_secret";
+
+  "google_project_service.secretmanager" -> "google_secret_manager_secret.db_password";
+  "google_project_service.secretmanager" -> "google_secret_manager_secret.api_key";
+  "google_project_service.secretmanager" -> "google_secret_manager_secret.oauth_secret";
+  "google_project_service.secretmanager" -> "google_secret_manager_secret.jwt_secret";
+  "google_project_service.secretmanager" -> "google_secret_manager_secret.encryption_key";
+  "google_project_service.secretmanager" -> "google_secret_manager_secret.backup_key";
+  "google_project_service.secretmanager" -> "google_secret_manager_secret.monitoring_token";
+  "google_project_service.secretmanager" -> "google_secret_manager_secret.logging_token";
+  "google_project_service.secretmanager" -> "google_secret_manager_secret.cicd_token";
+  "google_project_service.secretmanager" -> "google_secret_manager_secret.vpn_key";
+  
+}
